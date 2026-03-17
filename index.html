@@ -5,6 +5,22 @@
   <title>Goals Tracker</title>
 </head>
 <body>
-  <h2>Goals Tracker Dashboard</h2>
-  <p>If you see this, the repo is wired correctly.</p>
+
+<h2>Goals Tracker Dashboard</h2>
+<pre id="output">Loading API…</pre>
+
+<script>
+fetch('/api/goals')
+  .then(res => res.json())
+  .then(data => {
+    document.getElementById('output').textContent =
+      JSON.stringify(data, null, 2);
+  })
+  .catch(err => {
+    document.getElementById('output').textContent =
+      'ERROR: ' + err.message;
+  });
+</script>
+
 </body>
+</html>
