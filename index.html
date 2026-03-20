@@ -17,6 +17,10 @@
       margin-top: 0;
     }
 
+    h2 {
+      margin-top: 40px;
+    }
+
     .updated {
       color: #666;
       font-size: 0.9em;
@@ -27,11 +31,11 @@
       width: 100%;
       border-collapse: collapse;
       background: white;
-      margin-bottom: 30px;
+      margin-bottom: 20px;
     }
 
     th, td {
-      padding: 10px;
+      padding: 8px 10px;
       border-bottom: 1px solid #ddd;
       text-align: left;
     }
@@ -48,110 +52,119 @@
     .zero {
       color: #999;
     }
-
-    .section {
-      margin-bottom: 40px;
-    }
   </style>
 </head>
 
 <body>
 
-  <h1>Goals Tracker</h1>
-  <div class="updated" id="lastUpdated">Loading…</div>
+<h1>Goals Tracker</h1>
+<div class="updated" id="lastUpdated">Loading…</div>
 
-  <div class="section">
-    <h2>Monthly New Premium</h2>
-    <table>
-      <thead>
+<h2>Monthly New Premium</h2>
+<table>
+  <thead>
+    <tr><th>Agent</th><th>Premium</th></tr>
+  </thead>
+  <tbody id="monthlyTable"></tbody>
+</table>
+
+<h2>Weekly Agent Breakdown</h2>
+<table>
+  <thead>
+    <tr><th>Agent</th><th>Policies</th><th>Premium</th></tr>
+  </thead>
+  <tbody id="weeklyTable"></tbody>
+</table>
+
+<h2>Weekly Incentives</h2>
+<table>
+  <thead>
+    <tr><th>Policies</th><th>Status</th></tr>
+  </thead>
+  <tbody id="incentivesTable"></tbody>
+</table>
+
+<h2>Goal Levels</h2>
+<table>
+  <thead>
+    <tr><th>Level</th><th>Threshold</th><th>Label</th><th>Unlocked</th></tr>
+  </thead>
+  <tbody id="levelsTable"></tbody>
+</table>
+
+<h2>Drawings</h2>
+<table>
+  <thead>
+    <tr><th>Type</th><th>Agent</th><th>Required</th><th>Locked</th></tr>
+  </thead>
+  <tbody id="drawingsTable"></tbody>
+</table>
+
+<script>
+fetch('./data/goals-tracker.json?nocache=' + new Date().getTime())
+  .then(r => r.json())
+  .then(data => {
+
+    document.getElementById('lastUpdated').textContent =
+      'Last updated: ' + new Date(data.meta.lastUpdated).toLocaleString();
+
+    // Monthly
+    data.monthlyNewPremium.forEach(r => {
+      monthlyTable.innerHTML += `
         <tr>
-          <th>Agent</th>
-          <th>Premium</th>
-        </tr>
-      </thead>
-      <tbody id="monthlyTable"></tbody>
-    </table>
-  </div>
+          <td>${r.Agent}</td>
+          <td class="${Number(r.Amount) === 0 ? 'zero' : ''}">
+            ${Number(r.Amount).toLocaleString('en-US',{style:'currency',currency:'USD'})}
+          </td>
+        </tr>`;
+    });
 
-  <div class="section">
-    <h2>Weekly Agent Breakdown</h2>
-    <table>
-      <thead>
+    // Weekly breakdown
+    data.weeklyAgentBreakdown.forEach(r => {
+      weeklyTable.innerHTML += `
         <tr>
-          <th>Agent</th>
-          <th>Policies</th>
-          <th>Premium</th>
-        </tr>
-      </thead>
-      <tbody id="weeklyTable"></tbody>
-    </table>
-  </div>
+          <td>${r.Agent}</td>
+          <td>${r.Policies}</td>
+          <td>${Number(r.Premium).toLocaleString('en-US',{style:'currency',currency:'USD'})}</td>
+        </tr>`;
+    });
 
-  <script>
-    fetch('./data/goals-tracker.json?ts=' + Date.now())
-      .then(res => res.json())
-      .then(data => {
+    // Weekly incentives
+    data.weeklyIncentives.forEach(r => {
+      incentivesTable.innerHTML += `
+        <tr>
+          <td>${r.Policies}</td>
+          <td>${r.StatusMessage}</td>
+        </tr>`;
+    });
 
-        // Last updated
-        document.getElementById('lastUpdated').textContent =
-          'Last updated: ' + new Date(data.meta.lastUpdated).toLocaleString();
+    // Goal levels
+    data.goalLevels.forEach(r => {
+      levelsTable.innerHTML += `
+        <tr>
+          <td>${r.Level}</td>
+          <td>${r.Threshold}</td>
+          <td>${r.Label}</td>
+          <td>${r.Unlocked}</td>
+        </tr>`;
+    });
 
-        // Monthly new premium
-        const monthlyBody = document.getElementById('monthlyTable');
-        monthlyBody.innerHTML = '';
+    // Drawings
+    data.drawings.forEach(r => {
+      drawingsTable.innerHTML += `
+        <tr>
+          <td>${r.Type}</td>
+          <td>${r.Agent}</td>
+          <td>${r.Required}</td>
+          <td>${r.Locked}</td>
+        </tr>`;
+    });
 
-        data.monthlyNewPremium.forEach(row => {
-          const tr = document.createElement('tr');
-
-          const agent = document.createElement('td');
-          agent.textContent = row.Agent;
-
-          const amount = document.createElement('td');
-          amount.textContent = Number(row.Amount).toLocaleString('en-US', {
-            style: 'currency',
-            currency: 'USD'
-          });
-
-          if (Number(row.Amount) === 0) {
-            amount.classList.add('zero');
-          }
-
-          tr.appendChild(agent);
-          tr.appendChild(amount);
-          monthlyBody.appendChild(tr);
-        });
-
-        // Weekly breakdown
-        const weeklyBody = document.getElementById('weeklyTable');
-        weeklyBody.innerHTML = '';
-
-        data.weeklyAgentBreakdown.forEach(row => {
-          const tr = document.createElement('tr');
-
-          const agent = document.createElement('td');
-          agent.textContent = row.Agent;
-
-          const policies = document.createElement('td');
-          policies.textContent = row.Policies;
-
-          const premium = document.createElement('td');
-          premium.textContent = Number(row.Premium).toLocaleString('en-US', {
-            style: 'currency',
-            currency: 'USD'
-          });
-
-          tr.appendChild(agent);
-          tr.appendChild(policies);
-          tr.appendChild(premium);
-          weeklyBody.appendChild(tr);
-        });
-
-      })
-      .catch(err => {
-        document.body.innerHTML =
-          '<h2>Error loading dashboard</h2><pre>' + err + '</pre>';
-      });
-  </script>
+  })
+  .catch(err => {
+    document.body.innerHTML = '<h2>Error loading dashboard</h2><pre>' + err + '</pre>';
+  });
+</script>
 
 </body>
 </html>
