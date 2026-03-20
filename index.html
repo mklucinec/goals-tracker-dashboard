@@ -3,9 +3,25 @@
 <head>
   <meta charset="utf-8">
   <title>Goals Tracker Dashboard</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+    pre {
+      background: #f4f4f4;
+      padding: 15px;
+      overflow: auto;
+      max-height: 80vh;
+    }
+  </style>
 </head>
 <body>
+
   <h1>Goals Tracker</h1>
+  <p>Live data from GitHub</p>
+
+  <!-- ✅ THIS ELEMENT MUST EXIST -->
   <pre id="output">Loading…</pre>
 
   <script>
@@ -16,8 +32,10 @@
           JSON.stringify(data, null, 2);
       })
       .catch(err => {
-        document.getElementById('output').textContent = err.toString();
+        document.getElementById('output').textContent =
+          'Error: ' + err.toString();
       });
   </script>
+
 </body>
 </html>
