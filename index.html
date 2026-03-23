@@ -6,138 +6,90 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
 <style>
-  :root{
-    --bg:#f5f7fa;
-    --card:#ffffff;
-    --text:#222;
-    --muted:#667085;
-    --border:#e9edf5;
-    --blue:#2f5bea;
-    --blue2:#4c7cff;
-    --shadow:0 2px 10px rgba(0,0,0,.06);
-    --radius:12px;
+  body {
+    font-family: "Segoe UI", Arial, sans-serif;
+    background: #f5f7fa;
+    margin: 0;
+    padding: 20px;
+    color: #333;
   }
 
-  body{
-    font-family:"Segoe UI", Arial, sans-serif;
-    background:var(--bg);
-    margin:0;
-    padding:22px;
-    color:var(--text);
-    font-size:18px; /* bigger overall */
-    line-height:1.35;
+  h1 {
+    margin: 0 0 6px 0;
   }
 
-  h1{
-    margin:0 0 8px 0;
-    font-size:28px;
-    letter-spacing:.2px;
+  .updated {
+    color: #666;
+    font-size: 0.85em;
+    margin-bottom: 20px;
   }
 
-  .updated{
-    color:var(--muted);
-    font-size:0.95em;
-    margin-bottom:18px;
+  .section {
+    background: #fff;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
   }
 
-  /* Top performer */
-  .highlight{
-    background:linear-gradient(135deg, var(--blue), var(--blue2));
-    color:#fff;
-    border-radius:var(--radius);
-    padding:18px;
-    margin-bottom:18px;
-    box-shadow:var(--shadow);
-  }
-  .highlight .label{
-    font-size:1.0em;
-    opacity:.95;
-    margin-bottom:6px;
-  }
-  .highlight .name{
-    font-size:1.55em;
-    font-weight:700;
-    margin:0 0 6px 0;
-  }
-  .highlight .stats{
-    font-size:1.05em;
-    opacity:.95;
-  }
-  .highlight .totals{
-    margin-top:10px;
-    padding-top:10px;
-    border-top:1px solid rgba(255,255,255,.25);
-    font-size:1.0em;
-    opacity:.95;
+  .section h2 {
+    margin-top: 0;
+    font-size: 1.15em;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 6px;
   }
 
-  /* Grid layout */
-  .grid{
-    display:grid;
-    grid-template-columns:repeat(2, minmax(0, 1fr));
-    gap:16px;
-    align-items:start;
-  }
-  @media (max-width: 980px){
-    .grid{ grid-template-columns:1fr; }
+  .highlight {
+    background: linear-gradient(135deg, #2f5bea, #4c7cff);
+    color: #fff;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 20px;
   }
 
-  .card{
-    background:var(--card);
-    border-radius:var(--radius);
-    padding:16px;
-    box-shadow:var(--shadow);
-    border:1px solid var(--border);
+  .highlight .name {
+    font-size: 1.4em;
+    font-weight: bold;
   }
 
-  .card h2{
-    margin:0 0 10px 0;
-    font-size:1.15em;
-    padding-bottom:8px;
-    border-bottom:1px solid var(--border);
+  .highlight .stats {
+    margin-top: 6px;
+    font-size: 1em;
+    opacity: 0.9;
   }
 
-  /* Tables */
-  table{
-    width:100%;
-    border-collapse:collapse;
-    margin-top:10px;
-    font-size:16px; /* bigger tables */
-  }
-  th, td{
-    padding:10px 10px;
-    border-bottom:1px solid var(--border);
-    text-align:left;
-    vertical-align:top;
-  }
-  th{
-    background:#f2f5ff;
-    font-weight:650;
-  }
-  tr:nth-child(even){
-    background:#fbfcff;
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
   }
 
-  .center{ text-align:center; }
-  .currency{ font-weight:650; }
-  .muted{ color:#98a2b3; }
-  .pill{
-    display:inline-block;
-    padding:4px 10px;
-    border-radius:999px;
-    background:#eef2ff;
-    color:#273aa8;
-    font-weight:600;
-    font-size:.9em;
-    white-space:nowrap;
+  th, td {
+    padding: 8px 10px;
+    border-bottom: 1px solid #eee;
+    font-size: 0.95em;
+    text-align: left;
   }
-  .status-ok{ background:#e7f7ee; color:#067647; }
-  .status-warn{ background:#fff4e5; color:#b54708; }
-  .status-lock{ background:#fdecec; color:#b42318; }
 
-  /* Full-width drawings section */
-  .full{
-    margin-top:16px;
+  th {
+    background: #f0f3fa;
+    font-weight: 600;
+  }
+
+  tr:nth-child(even) {
+    background: #fafafa;
+  }
+
+  .currency {
+    font-weight: 600;
+  }
+
+  .muted {
+    color: #999;
+  }
+
+  .center {
+    text-align: center;
   }
 </style>
 </head>
@@ -147,84 +99,76 @@
 <h1>🎯 Goals Tracker</h1>
 <div class="updated" id="lastUpdated">Loading…</div>
 
-<!-- Top performer -->
 <div class="highlight" id="topPerformer" style="display:none;">
-  <div class="label" id="topLabel">🏆 Top Performer This Week</div>
+  <div id="topLabel"></div>
   <div class="name" id="topName"></div>
   <div class="stats" id="topStats"></div>
-  <div class="totals" id="teamTotals"></div>
 </div>
 
-<!-- Row 1 -->
-<div class="grid">
-  <div class="card">
-    <h2 id="monthlyTitle">📆 Monthly New Premium</h2>
-    <table>
-      <thead>
-        <tr>
-          <th>Agent</th>
-          <th id="monthlyAmountHeader">New Premium</th>
-        </tr>
-      </thead>
-      <tbody id="monthlyTable"></tbody>
-    </table>
-  </div>
-
-  <div class="card">
-    <h2 id="weeklyTitle">📊 Weekly Agent Breakdown</h2>
-    <table>
-      <thead>
-        <tr>
-          <th class="center" style="width:70px;">Rank</th>
-          <th>Agent</th>
-          <th class="center" id="policiesHeader" style="width:140px;">Policies</th>
-          <th id="weeklyPremiumHeader" style="width:170px;">Weekly Premium</th>
-        </tr>
-      </thead>
-      <tbody id="weeklyTable"></tbody>
-    </table>
-  </div>
-
-  <!-- Row 2 -->
-  <div class="card">
-    <h2 id="incentivesTitle">🎁 Weekly Incentives</h2>
-    <table>
-      <thead>
-        <tr>
-          <th style="width:120px;">Policies</th>
-          <th>Status</th>
-        </tr>
-      </thead>
-      <tbody id="incentivesTable"></tbody>
-    </table>
-  </div>
-
-  <div class="card">
-    <h2 id="levelsTitle">🚀 Goal Levels</h2>
-    <table>
-      <thead>
-        <tr>
-          <th style="width:80px;">Level</th>
-          <th style="width:120px;">Threshold</th>
-          <th>Reward</th>
-          <th class="center" style="width:120px;">Unlocked</th>
-        </tr>
-      </thead>
-      <tbody id="levelsTable"></tbody>
-    </table>
-  </div>
-</div>
-
-<!-- Row 3 full-width -->
-<div class="card full">
-  <h2 id="drawingsTitle">🎟️ Drawings</h2>
+<div class="section">
+  <h2 id="monthlyTitle"></h2>
   <table>
     <thead>
       <tr>
-        <th style="width:140px;">Type</th>
         <th>Agent</th>
-        <th style="width:120px;">Required</th>
-        <th class="center" style="width:120px;">Locked</th>
+        <th id="monthlyAmountHeader"></th>
+      </tr>
+    </thead>
+    <tbody id="monthlyTable"></tbody>
+  </table>
+</div>
+
+<div class="section">
+  <h2 id="weeklyTitle"></h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Agent</th>
+        <th class="center" id="policiesHeader"></th>
+        <th id="weeklyPremiumHeader"></th>
+      </tr>
+    </thead>
+    <tbody id="weeklyTable"></tbody>
+  </table>
+</div>
+
+<div class="section">
+  <h2 id="incentivesTitle"></h2>
+  <table>
+    <thead>
+      <tr>
+        <th id="policiesHeader2"></th>
+        <th id="statusHeader"></th>
+      </tr>
+    </thead>
+    <tbody id="incentivesTable"></tbody>
+  </table>
+</div>
+
+<div class="section">
+  <h2 id="levelsTitle"></h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Level</th>
+        <th id="thresholdHeader"></th>
+        <th id="rewardHeader"></th>
+        <th class="center">Status</th>
+      </tr>
+    </thead>
+    <tbody id="levelsTable"></tbody>
+  </table>
+</div>
+
+<div class="section">
+  <h2 id="drawingsTitle"></h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Agent</th>
+        <th id="requiredHeader"></th>
+        <th class="center">Status</th>
       </tr>
     </thead>
     <tbody id="drawingsTable"></tbody>
@@ -232,148 +176,147 @@
 </div>
 
 <script>
-  /* ---------- Label layer (dashboard owns wording) ---------- */
-  const LABELS = {
-    phrases: {
-      lastUpdated: "Last updated",
-      topPerformer: "🏆 Top Performer This Week",
-      teamTotals: "Team totals",
-      policiesSuffix: "policies",
+/* =====================
+   DISPLAY LABELS
+===================== */
+const LABELS = {
+  sections: {
+    monthly: "📆 Monthly New Premium",
+    weekly: "📊 Weekly Agent Breakdown",
+    incentives: "🎁 Weekly Incentives",
+    levels: "🚀 Goal Levels",
+    drawings: "🎟️ Drawings"
+  },
+  columns: {
+    premium: "New Premium",
+    policies: "Policies Written",
+    status: "Incentive Status",
+    threshold: "Required Premium",
+    reward: "Reward",
+    required: "Required"
+  },
+  phrases: {
+    topPerformer: "🏆 Top Performer This Week",
+    lastUpdated: "Last updated",
+    policiesSuffix: "policies written"
+  }
+};
+
+/* =====================
+   FORMATTERS
+===================== */
+function formatCurrency(val) {
+  if (Number(val) === 0) return "—";
+  return Number(val).toLocaleString("en-US", {
+    style: "currency",
+    currency: "USD"
+  });
+}
+
+function yesNoIcon(val) {
+  return (val === true || val === "Yes" || val === "TRUE")
+    ? "✅"
+    : "🔒";
+}
+
+function formatStatus(msg) {
+  if (!msg) return "";
+  const m = msg.toLowerCase();
+  if (m.includes("unlocked")) return "✅ Unlocked";
+  if (m.includes("need") || m.includes("remaining")) return "⏳ In progress";
+  return msg;
+}
+
+/* =====================
+   SET STATIC LABELS
+===================== */
+document.getElementById("monthlyTitle").textContent = LABELS.sections.monthly;
+document.getElementById("weeklyTitle").textContent = LABELS.sections.weekly;
+document.getElementById("incentivesTitle").textContent = LABELS.sections.incentives;
+document.getElementById("levelsTitle").textContent = LABELS.sections.levels;
+document.getElementById("drawingsTitle").textContent = LABELS.sections.drawings;
+
+document.getElementById("monthlyAmountHeader").textContent = LABELS.columns.premium;
+document.getElementById("weeklyPremiumHeader").textContent = LABELS.columns.premium;
+document.getElementById("policiesHeader").textContent = LABELS.columns.policies;
+document.getElementById("policiesHeader2").textContent = LABELS.columns.policies;
+document.getElementById("statusHeader").textContent = LABELS.columns.status;
+document.getElementById("thresholdHeader").textContent = LABELS.columns.threshold;
+document.getElementById("rewardHeader").textContent = LABELS.columns.reward;
+document.getElementById("requiredHeader").textContent = LABELS.columns.required;
+
+/* =====================
+   LOAD DATA
+===================== */
+fetch("./data/goals-tracker.json?nocache=" + Date.now())
+  .then(r => r.json())
+  .then(data => {
+
+    document.getElementById("lastUpdated").textContent =
+      `${LABELS.phrases.lastUpdated}: ` +
+      new Date(data.meta.lastUpdated).toLocaleString();
+
+    if (data.weeklyAgentBreakdown.length > 0) {
+      const top = data.weeklyAgentBreakdown[0];
+      document.getElementById("topLabel").textContent = LABELS.phrases.topPerformer;
+      document.getElementById("topName").textContent = top.Agent;
+      document.getElementById("topStats").textContent =
+        `${top.Policies} ${LABELS.phrases.policiesSuffix} · ${formatCurrency(top.Premium)}`;
+      document.getElementById("topPerformer").style.display = "block";
     }
-  };
 
-  /* ---------- Helpers ---------- */
-  const $$ = (id) => document.getElementById(id);
-
-  function num(x){
-    const n = Number(x);
-    return Number.isFinite(n) ? n : 0;
-  }
-
-  function formatCurrency(val){
-    const n = num(val);
-    if (n === 0) return "—";
-    return n.toLocaleString("en-US", { style:"currency", currency:"USD" });
-  }
-
-  function yesNoIcon(val){
-    return (val === true || val === "Yes" || val === "TRUE" || val === 1 || val === "1")
-      ? "✅"
-      : "🔒";
-  }
-
-  function statusPillFromMessage(msg){
-    if(!msg) return `<span class="pill">—</span>`;
-    const m = String(msg).toLowerCase();
-
-    if(m.includes("unlocked") || m.includes("✅")) return `<span class="pill status-ok">✅ Unlocked</span>`;
-    if(m.includes("keep selling") || m.includes("more") || m.includes("need") || m.includes("remaining"))
-      return `<span class="pill status-warn">⏳ In progress</span>`;
-
-    return `<span class="pill">${msg}</span>`;
-  }
-
-  function clearTables(){
-    ["monthlyTable","weeklyTable","incentivesTable","levelsTable","drawingsTable"].forEach(id => $$(id).innerHTML = "");
-  }
-
-  /* ---------- Load data ---------- */
-  fetch("./data/goals-tracker.json?nocache=" + Date.now())
-    .then(r => r.json())
-    .then(data => {
-      clearTables();
-
-      // Last updated
-      $$("#lastUpdated").textContent =
-        `${LABELS.phrases.lastUpdated}: ` + new Date(data.meta.lastUpdated).toLocaleString();
-
-      // Weekly sorting + Top performer fix:
-      // Sort by Policies desc, then Premium desc. Ignore rows where both are 0.
-      const weeklyRaw = Array.isArray(data.weeklyAgentBreakdown) ? data.weeklyAgentBreakdown : [];
-      const weeklySorted = weeklyRaw
-        .map(r => ({
-          Agent: r.Agent,
-          Policies: num(r.Policies),
-          Premium: num(r.Premium)
-        }))
-        .sort((a,b) => (b.Policies - a.Policies) || (b.Premium - a.Premium));
-
-      const top = weeklySorted.find(r => r.Policies > 0 || r.Premium > 0);
-
-      // Team totals (sum across all rows)
-      const totalPolicies = weeklySorted.reduce((sum,r) => sum + r.Policies, 0);
-      const totalPremium  = weeklySorted.reduce((sum,r) => sum + r.Premium, 0);
-
-      if (top){
-        $$("#topLabel").textContent = LABELS.phrases.topPerformer;
-        $$("#topName").textContent = top.Agent;
-        $$("#topStats").textContent =
-          `${top.Policies} ${LABELS.phrases.policiesSuffix} · ${formatCurrency(top.Premium)} weekly premium`;
-        $$("#teamTotals").textContent =
-          `${LABELS.phrases.teamTotals}: ${totalPolicies} ${LABELS.phrases.policiesSuffix} · ${formatCurrency(totalPremium)} weekly premium`;
-        $$("#topPerformer").style.display = "block";
-      } else {
-        // If nobody has activity yet, hide it cleanly
-        $$("#topPerformer").style.display = "none";
-      }
-
-      // Monthly New Premium (keep as-is, but show dashes for zeros)
-      (data.monthlyNewPremium || []).forEach(r => {
-        const amt = num(r.Amount);
-        $$("#monthlyTable").innerHTML += `
-          <tr>
-            <td>${r.Agent ?? ""}</td>
-            <td class="currency ${amt === 0 ? "muted" : ""}">${formatCurrency(amt)}</td>
-          </tr>`;
-      });
-
-      // Weekly breakdown table: use the sorted list (top first), show rank 1..n
-      weeklySorted.forEach((r, idx) => {
-        const isEmpty = (r.Policies === 0 && r.Premium === 0);
-        $$("#weeklyTable").innerHTML += `
-          <tr class="${isEmpty ? "muted" : ""}">
-            <td class="center">${isEmpty ? "—" : (idx + 1)}</td>
-            <td>${r.Agent ?? ""}</td>
-            <td class="center">${r.Policies}</td>
-            <td class="currency ${r.Premium === 0 ? "muted" : ""}">${formatCurrency(r.Premium)}</td>
-          </tr>`;
-      });
-
-      // Weekly incentives: show a clean pill + keep message in text
-      (data.weeklyIncentives || []).forEach(r => {
-        $$("#incentivesTable").innerHTML += `
-          <tr>
-            <td>${num(r.Policies)}</td>
-            <td>${statusPillFromMessage(r.StatusMessage)} <span class="muted" style="margin-left:8px;">${r.StatusMessage ?? ""}</span></td>
-          </tr>`;
-      });
-
-      // Goal levels
-      (data.goalLevels || []).forEach(r => {
-        $$("#levelsTable").innerHTML += `
-          <tr>
-            <td>${r.Level ?? ""}</td>
-            <td>${r.Threshold ?? ""}</td>
-            <td>${r.Label ?? ""}</td>
-            <td class="center">${yesNoIcon(r.Unlocked)}</td>
-          </tr>`;
-      });
-
-      // Drawings (leave table-style)
-      (data.drawings || []).forEach(r => {
-        $$("#drawingsTable").innerHTML += `
-          <tr>
-            <td>${r.Type ?? ""}</td>
-            <td>${r.Agent ?? ""}</td>
-            <td>${r.Required ?? ""}</td>
-            <td class="center">${yesNoIcon(r.Locked)}</td>
-          </tr>`;
-      });
-
-    })
-    .catch(err => {
-      document.body.innerHTML = "<h2>Error loading dashboard</h2><pre>" + err + "</pre>";
+    data.monthlyNewPremium.forEach(r => {
+      monthlyTable.innerHTML += `
+        <tr>
+          <td>${r.Agent}</td>
+          <td class="currency ${Number(r.Amount) === 0 ? 'muted' : ''}">
+            ${formatCurrency(r.Amount)}
+          </td>
+        </tr>`;
     });
+
+    data.weeklyAgentBreakdown.forEach(r => {
+      weeklyTable.innerHTML += `
+        <tr>
+          <td>${r.Agent}</td>
+          <td class="center">${r.Policies}</td>
+          <td class="currency">${formatCurrency(r.Premium)}</td>
+        </tr>`;
+    });
+
+    data.weeklyIncentives.forEach(r => {
+      incentivesTable.innerHTML += `
+        <tr>
+          <td>${r.Policies}</td>
+          <td>${formatStatus(r.StatusMessage)}</td>
+        </tr>`;
+    });
+
+    data.goalLevels.forEach(r => {
+      levelsTable.innerHTML += `
+        <tr>
+          <td>${r.Level}</td>
+          <td>${r.Threshold}</td>
+          <td>${r.Label}</td>
+          <td class="center">${yesNoIcon(r.Unlocked)}</td>
+        </tr>`;
+    });
+
+    data.drawings.forEach(r => {
+      drawingsTable.innerHTML += `
+        <tr>
+          <td>${r.Type}</td>
+          <td>${r.Agent}</td>
+          <td>${r.Required}</td>
+          <td class="center">${yesNoIcon(r.Locked)}</td>
+        </tr>`;
+    });
+
+  })
+  .catch(err => {
+    document.body.innerHTML =
+      "<h2>Error loading dashboard</h2><pre>" + err + "</pre>";
+  });
 </script>
 
 </body>
