@@ -15,33 +15,50 @@
 
     h1 {
       margin-top: 0;
+      margin-bottom: 5px;
     }
 
     .updated {
       color: #555;
-      font-size: 0.9em;
-      margin-bottom: 20px;
+      font-size: 0.95em;
+      margin-bottom: 25px;
     }
 
+    /* --- GRID LAYOUT --- */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 25px;
+      margin-bottom: 30px;
+    }
+
+    .grid-1 {
+      margin-bottom: 35px;
+    }
+
+    /* --- CARD STYLES --- */
     .card {
       background: #fff;
-      border-radius: 10px;
-      padding: 20px;
-      margin-bottom: 25px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+      border-radius: 12px;
+      padding: 25px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
     }
 
     .card h2 {
       margin-top: 0;
+      font-size: 1.4em;
     }
 
+    /* --- TABLE STYLES --- */
     table {
       width: 100%;
       border-collapse: collapse;
+      margin-top: 10px;
+      font-size: 1.05em;
     }
 
     th, td {
-      padding: 8px 10px;
+      padding: 10px 12px;
       border-bottom: 1px solid #e0e0e0;
       text-align: left;
     }
@@ -70,10 +87,11 @@
     }
 
     .badge {
-      padding: 4px 8px;
-      border-radius: 12px;
-      font-size: 0.8em;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 0.9em;
       display: inline-block;
+      font-weight: 600;
     }
 
     .badge-green {
@@ -85,6 +103,11 @@
       background: #f1f3f4;
       color: #555;
     }
+
+    /* --- EMPHASIS FOR BIG SECTIONS --- */
+    .focus {
+      font-size: 1.15em;
+    }
   </style>
 </head>
 
@@ -93,54 +116,66 @@
 <h1>🎯 Goals Tracker</h1>
 <div class="updated" id="lastUpdated">Loading…</div>
 
-<div class="card">
-  <h2>💰 Monthly New Premium</h2>
-  <table>
-    <thead>
-      <tr><th>Agent</th><th>Premium</th></tr>
-    </thead>
-    <tbody id="monthlyTable"></tbody>
-  </table>
+<!-- ROW 1: SUMMARY -->
+<div class="grid-2">
+
+  <div class="card">
+    <h2>💰 Monthly New Premium</h2>
+    <table>
+      <thead>
+        <tr><th>Agent</th><th>Premium</th></tr>
+      </thead>
+      <tbody id="monthlyTable"></tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2>🏆 Weekly Agent Breakdown</h2>
+    <table>
+      <thead>
+        <tr><th>Agent</th><th>Policies</th><th>Premium</th></tr>
+      </thead>
+      <tbody id="weeklyTable"></tbody>
+    </table>
+  </div>
+
 </div>
 
-<div class="card">
-  <h2>🏆 Weekly Agent Breakdown</h2>
-  <table>
-    <thead>
-      <tr><th>Agent</th><th>Policies</th><th>Premium</th></tr>
-    </thead>
-    <tbody id="weeklyTable"></tbody>
-  </table>
+<!-- ROW 2: BIG FOCUS SECTIONS -->
+<div class="grid-1">
+  <div class="card focus">
+    <h2>🎉 Weekly Incentives — Where We Are</h2>
+    <table>
+      <thead>
+        <tr><th>Policies</th><th>Status</th></tr>
+      </thead>
+      <tbody id="incentivesTable"></tbody>
+    </table>
+  </div>
 </div>
 
-<div class="card">
-  <h2>🎉 Weekly Incentives</h2>
-  <table>
-    <thead>
-      <tr><th>Policies</th><th>Status</th></tr>
-    </thead>
-    <tbody id="incentivesTable"></tbody>
-  </table>
+<div class="grid-1">
+  <div class="card focus">
+    <h2>🔓 Goal Levels — What We Need</h2>
+    <table>
+      <thead>
+        <tr><th>Level</th><th>Threshold</th><th>Reward</th><th>Status</th></tr>
+      </thead>
+      <tbody id="levelsTable"></tbody>
+    </table>
+  </div>
 </div>
 
-<div class="card">
-  <h2>🔓 Goal Levels</h2>
-  <table>
-    <thead>
-      <tr><th>Level</th><th>Threshold</th><th>Reward</th><th>Status</th></tr>
-    </thead>
-    <tbody id="levelsTable"></tbody>
-  </table>
-</div>
-
-<div class="card">
-  <h2>🎁 Drawings</h2>
-  <table>
-    <thead>
-      <tr><th>Type</th><th>Agent</th><th>Required</th><th>Status</th></tr>
-    </thead>
-    <tbody id="drawingsTable"></tbody>
-  </table>
+<div class="grid-1">
+  <div class="card">
+    <h2>🎁 Drawings</h2>
+    <table>
+      <thead>
+        <tr><th>Type</th><th>Agent</th><th>Required</th><th>Status</th></tr>
+      </thead>
+      <tbody id="drawingsTable"></tbody>
+    </table>
+  </div>
 </div>
 
 <script>
@@ -151,7 +186,6 @@ fetch('./data/goals-tracker.json?ts=' + Date.now())
     document.getElementById('lastUpdated').textContent =
       'Last updated: ' + new Date(data.meta.lastUpdated).toLocaleString();
 
-    // Monthly
     data.monthlyNewPremium.forEach(r => {
       monthlyTable.innerHTML += `
         <tr>
@@ -162,7 +196,6 @@ fetch('./data/goals-tracker.json?ts=' + Date.now())
         </tr>`;
     });
 
-    // Weekly breakdown
     data.weeklyAgentBreakdown.forEach(r => {
       weeklyTable.innerHTML += `
         <tr>
@@ -172,7 +205,6 @@ fetch('./data/goals-tracker.json?ts=' + Date.now())
         </tr>`;
     });
 
-    // Weekly incentives
     data.weeklyIncentives.forEach(r => {
       incentivesTable.innerHTML += `
         <tr>
@@ -181,7 +213,6 @@ fetch('./data/goals-tracker.json?ts=' + Date.now())
         </tr>`;
     });
 
-    // Goal levels
     data.goalLevels.forEach(r => {
       const unlocked = r.Unlocked === true || r.Unlocked === "True";
       levelsTable.innerHTML += `
@@ -195,7 +226,6 @@ fetch('./data/goals-tracker.json?ts=' + Date.now())
         </tr>`;
     });
 
-    // Drawings
     data.drawings.forEach(r => {
       const locked = r.Locked === true || r.Locked === "True";
       drawingsTable.innerHTML += `
@@ -211,10 +241,6 @@ fetch('./data/goals-tracker.json?ts=' + Date.now())
         </tr>`;
     });
 
-  })
-  .catch(err => {
-    document.body.innerHTML =
-      '<h2>Error loading dashboard</h2><pre>' + err + '</pre>';
   });
 </script>
 
