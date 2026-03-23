@@ -14,14 +14,13 @@
     }
 
     h1 {
-      margin-top: 0;
-      margin-bottom: 5px;
+      margin: 0 0 5px 0;
     }
 
     .updated {
       color: #555;
       font-size: 0.95em;
-      margin-bottom: 25px;
+      margin-bottom: 15px;
     }
 
     /* --- GRID LAYOUT --- */
@@ -49,7 +48,26 @@
       font-size: 1.4em;
     }
 
-    /* --- TABLE STYLES --- */
+    .focus {
+      font-size: 1.15em;
+    }
+
+    /* --- LEADER --- */
+    #leaderCard {
+      background: linear-gradient(135deg, #2f5bea, #4c7cff);
+      color: #fff;
+    }
+
+    #leaderCard h2 {
+      margin-top: 0;
+    }
+
+    #leaderText {
+      font-size: 1.4em;
+      font-weight: bold;
+    }
+
+    /* --- TABLES --- */
     table {
       width: 100%;
       border-collapse: collapse;
@@ -73,8 +91,13 @@
       background: #f9f9f9;
     }
 
-    .zero {
-      color: #aaa;
+    /* --- HIGHLIGHTS --- */
+    .top1 { background: #fff6cc !important; }
+    .top2 { background: #eef4ff !important; }
+    .top3 { background: #f0f0f0 !important; }
+
+    .zero-row {
+      opacity: 0.45;
     }
 
     .unlocked {
@@ -103,11 +126,6 @@
       background: #f1f3f4;
       color: #555;
     }
-
-    /* --- EMPHASIS FOR BIG SECTIONS --- */
-    .focus {
-      font-size: 1.15em;
-    }
   </style>
 </head>
 
@@ -116,7 +134,13 @@
 <h1>🎯 Goals Tracker</h1>
 <div class="updated" id="lastUpdated">Loading…</div>
 
-<!-- ROW 1: SUMMARY -->
+<!-- LEADER BANNER -->
+<div class="card focus" id="leaderCard" style="display:none;">
+  <h2>🏆 Weekly Leader</h2>
+  <div id="leaderText"></div>
+</div>
+
+<!-- SUMMARY ROW -->
 <div class="grid-2">
 
   <div class="card">
@@ -133,7 +157,7 @@
     <h2>🏆 Weekly Agent Breakdown</h2>
     <table>
       <thead>
-        <tr><th>Agent</th><th>Policies</th><th>Premium</th></tr>
+        <tr><th>Rank</th><th>Agent</th><th>Policies</th><th>Premium</th></tr>
       </thead>
       <tbody id="weeklyTable"></tbody>
     </table>
@@ -141,7 +165,7 @@
 
 </div>
 
-<!-- ROW 2: BIG FOCUS SECTIONS -->
+<!-- BIG FOCUS SECTIONS -->
 <div class="grid-1">
   <div class="card focus">
     <h2>🎉 Weekly Incentives — Where We Are</h2>
@@ -186,25 +210,49 @@ fetch('./data/goals-tracker.json?ts=' + Date.now())
     document.getElementById('lastUpdated').textContent =
       'Last updated: ' + new Date(data.meta.lastUpdated).toLocaleString();
 
+    /* MONTHLY */
     data.monthlyNewPremium.forEach(r => {
       monthlyTable.innerHTML += `
         <tr>
           <td>${r.Agent}</td>
-          <td class="${Number(r.Amount) === 0 ? 'zero' : ''}">
-            ${Number(r.Amount).toLocaleString('en-US',{style:'currency',currency:'USD'})}
-          </td>
+          <td>${Number(r.Amount).toLocaleString('en-US',{style:'currency',currency:'USD'})}</td>
         </tr>`;
     });
 
-    data.weeklyAgentBreakdown.forEach(r => {
+    /* WEEKLY BREAKDOWN + LEADER */
+    const wb = (data.weeklyAgentBreakdown || []).map(r => ({
+      Agent: r.Agent,
+      Policies: Number(r.Policies) || 0,
+      Premium: Number(r.Premium) || 0
+    }));
+
+    wb.sort((a,b) => (b.Policies - a.Policies) || (b.Premium - a.Premium));
+
+    if (wb.length) {
+      const leader = wb[0];
+      leaderCard.style.display = 'block';
+      leaderText.innerHTML =
+        `🥇 ${leader.Agent} — ${leader.Policies} policies • ` +
+        `${leader.Premium.toLocaleString('en-US',{style:'currency',currency:'USD'})}`;
+    }
+
+    wb.forEach((r,i) => {
+      let cls = '';
+      if (i === 0) cls = 'top1';
+      else if (i === 1) cls = 'top2';
+      else if (i === 2) cls = 'top3';
+      if (r.Policies === 0) cls += ' zero-row';
+
       weeklyTable.innerHTML += `
-        <tr>
+        <tr class="${cls}">
+          <td><strong>${i+1}</strong></td>
           <td>${r.Agent}</td>
           <td>${r.Policies}</td>
-          <td>${Number(r.Premium).toLocaleString('en-US',{style:'currency',currency:'USD'})}</td>
+          <td>${r.Premium.toLocaleString('en-US',{style:'currency',currency:'USD'})}</td>
         </tr>`;
     });
 
+    /* INCENTIVES */
     data.weeklyIncentives.forEach(r => {
       incentivesTable.innerHTML += `
         <tr>
@@ -213,6 +261,7 @@ fetch('./data/goals-tracker.json?ts=' + Date.now())
         </tr>`;
     });
 
+    /* GOAL LEVELS */
     data.goalLevels.forEach(r => {
       const unlocked = r.Unlocked === true || r.Unlocked === "True";
       levelsTable.innerHTML += `
@@ -226,6 +275,7 @@ fetch('./data/goals-tracker.json?ts=' + Date.now())
         </tr>`;
     });
 
+    /* DRAWINGS */
     data.drawings.forEach(r => {
       const locked = r.Locked === true || r.Locked === "True";
       drawingsTable.innerHTML += `
