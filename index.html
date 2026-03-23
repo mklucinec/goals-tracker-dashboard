@@ -7,8 +7,8 @@
 
   <style>
     body {
-      font-family: Arial, sans-serif;
-      background: #f5f7fa;
+      font-family: "Segoe UI", Arial, sans-serif;
+      background: #f4f6f9;
       margin: 0;
       padding: 20px;
     }
@@ -17,91 +17,134 @@
       margin-top: 0;
     }
 
-    h2 {
-      margin-top: 40px;
-    }
-
     .updated {
-      color: #666;
+      color: #555;
       font-size: 0.9em;
       margin-bottom: 20px;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 25px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+    }
+
+    .card h2 {
+      margin-top: 0;
     }
 
     table {
       width: 100%;
       border-collapse: collapse;
-      background: white;
-      margin-bottom: 20px;
     }
 
     th, td {
       padding: 8px 10px;
-      border-bottom: 1px solid #ddd;
+      border-bottom: 1px solid #e0e0e0;
       text-align: left;
     }
 
     th {
       background: #2f5bea;
       color: white;
+      font-weight: normal;
     }
 
     tr:nth-child(even) {
-      background: #f2f2f2;
+      background: #f9f9f9;
     }
 
     .zero {
+      color: #aaa;
+    }
+
+    .unlocked {
+      color: #1a7f37;
+      font-weight: bold;
+    }
+
+    .locked {
       color: #999;
+    }
+
+    .badge {
+      padding: 4px 8px;
+      border-radius: 12px;
+      font-size: 0.8em;
+      display: inline-block;
+    }
+
+    .badge-green {
+      background: #e6f4ea;
+      color: #137333;
+    }
+
+    .badge-gray {
+      background: #f1f3f4;
+      color: #555;
     }
   </style>
 </head>
 
 <body>
 
-<h1>Goals Tracker</h1>
+<h1>🎯 Goals Tracker</h1>
 <div class="updated" id="lastUpdated">Loading…</div>
 
-<h2>Monthly New Premium</h2>
-<table>
-  <thead>
-    <tr><th>Agent</th><th>Premium</th></tr>
-  </thead>
-  <tbody id="monthlyTable"></tbody>
-</table>
+<div class="card">
+  <h2>💰 Monthly New Premium</h2>
+  <table>
+    <thead>
+      <tr><th>Agent</th><th>Premium</th></tr>
+    </thead>
+    <tbody id="monthlyTable"></tbody>
+  </table>
+</div>
 
-<h2>Weekly Agent Breakdown</h2>
-<table>
-  <thead>
-    <tr><th>Agent</th><th>Policies</th><th>Premium</th></tr>
-  </thead>
-  <tbody id="weeklyTable"></tbody>
-</table>
+<div class="card">
+  <h2>🏆 Weekly Agent Breakdown</h2>
+  <table>
+    <thead>
+      <tr><th>Agent</th><th>Policies</th><th>Premium</th></tr>
+    </thead>
+    <tbody id="weeklyTable"></tbody>
+  </table>
+</div>
 
-<h2>Weekly Incentives</h2>
-<table>
-  <thead>
-    <tr><th>Policies</th><th>Status</th></tr>
-  </thead>
-  <tbody id="incentivesTable"></tbody>
-</table>
+<div class="card">
+  <h2>🎉 Weekly Incentives</h2>
+  <table>
+    <thead>
+      <tr><th>Policies</th><th>Status</th></tr>
+    </thead>
+    <tbody id="incentivesTable"></tbody>
+  </table>
+</div>
 
-<h2>Goal Levels</h2>
-<table>
-  <thead>
-    <tr><th>Level</th><th>Threshold</th><th>Label</th><th>Unlocked</th></tr>
-  </thead>
-  <tbody id="levelsTable"></tbody>
-</table>
+<div class="card">
+  <h2>🔓 Goal Levels</h2>
+  <table>
+    <thead>
+      <tr><th>Level</th><th>Threshold</th><th>Reward</th><th>Status</th></tr>
+    </thead>
+    <tbody id="levelsTable"></tbody>
+  </table>
+</div>
 
-<h2>Drawings</h2>
-<table>
-  <thead>
-    <tr><th>Type</th><th>Agent</th><th>Required</th><th>Locked</th></tr>
-  </thead>
-  <tbody id="drawingsTable"></tbody>
-</table>
+<div class="card">
+  <h2>🎁 Drawings</h2>
+  <table>
+    <thead>
+      <tr><th>Type</th><th>Agent</th><th>Required</th><th>Status</th></tr>
+    </thead>
+    <tbody id="drawingsTable"></tbody>
+  </table>
+</div>
 
 <script>
-fetch('./data/goals-tracker.json?nocache=' + new Date().getTime())
+fetch('./data/goals-tracker.json?ts=' + Date.now())
   .then(r => r.json())
   .then(data => {
 
@@ -134,35 +177,44 @@ fetch('./data/goals-tracker.json?nocache=' + new Date().getTime())
       incentivesTable.innerHTML += `
         <tr>
           <td>${r.Policies}</td>
-          <td>${r.StatusMessage}</td>
+          <td>🎯 ${r.StatusMessage}</td>
         </tr>`;
     });
 
     // Goal levels
     data.goalLevels.forEach(r => {
+      const unlocked = r.Unlocked === true || r.Unlocked === "True";
       levelsTable.innerHTML += `
         <tr>
-          <td>${r.Level}</td>
+          <td>Level ${r.Level}</td>
           <td>${r.Threshold}</td>
           <td>${r.Label}</td>
-          <td>${r.Unlocked}</td>
+          <td class="${unlocked ? 'unlocked' : 'locked'}">
+            ${unlocked ? '✅ Unlocked' : '🔒 Locked'}
+          </td>
         </tr>`;
     });
 
     // Drawings
     data.drawings.forEach(r => {
+      const locked = r.Locked === true || r.Locked === "True";
       drawingsTable.innerHTML += `
         <tr>
-          <td>${r.Type}</td>
+          <td>🎁 ${r.Type}</td>
           <td>${r.Agent}</td>
           <td>${r.Required}</td>
-          <td>${r.Locked}</td>
+          <td>
+            <span class="badge ${locked ? 'badge-gray' : 'badge-green'}">
+              ${locked ? '🔒 Locked' : '🎉 Eligible'}
+            </span>
+          </td>
         </tr>`;
     });
 
   })
   .catch(err => {
-    document.body.innerHTML = '<h2>Error loading dashboard</h2><pre>' + err + '</pre>';
+    document.body.innerHTML =
+      '<h2>Error loading dashboard</h2><pre>' + err + '</pre>';
   });
 </script>
 
