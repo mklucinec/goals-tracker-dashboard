@@ -1,285 +1,135 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<title>Goals Tracker Dashboard</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8" />
+  <title>Goals Tracker Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-<style>
-  body {
-    font-family: "Segoe UI", Arial, sans-serif;
-    background: #f5f7fa;
-    margin: 0;
-    padding: 22px;
-    color: #222;
-    font-size: 18px;
-  }
-
-  h1 {
-    margin: 0 0 6px 0;
-    font-size: 28px;
-  }
-
-  .updated {
-    color: #666;
-    font-size: 0.95em;
-    margin-bottom: 18px;
-  }
-
-  /* Top performer */
-  .highlight {
-    background: linear-gradient(135deg, #2f5bea, #4c7cff);
-    color: #fff;
-    border-radius: 12px;
-    padding: 18px;
-    margin-bottom: 18px;
-  }
-
-  .highlight .label {
-    font-size: 1em;
-    opacity: 0.95;
-  }
-
-  .highlight .name {
-    font-size: 1.6em;
-    font-weight: bold;
-    margin: 6px 0;
-  }
-
-  .highlight .stats,
-  .highlight .totals {
-    font-size: 1.05em;
-    opacity: 0.95;
-  }
-
-  .highlight .totals {
-    margin-top: 10px;
-    padding-top: 10px;
-    border-top: 1px solid rgba(255,255,255,0.3);
-  }
-
-  /* Grid */
-  .grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-  }
-
-  @media (max-width: 900px) {
-    .grid {
-      grid-template-columns: 1fr;
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f7fa;
+      margin: 0;
+      padding: 20px;
     }
-  }
 
-  .card {
-    background: #fff;
-    border-radius: 12px;
-    padding: 16px;
-  }
+    h1 {
+      margin-top: 0;
+    }
 
-  .card h2 {
-    margin: 0 0 10px 0;
-    font-size: 1.2em;
-    border-bottom: 1px solid #eee;
-    padding-bottom: 6px;
-  }
+    h2 {
+      margin-top: 40px;
+    }
 
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 16px;
-    margin-top: 8px;
-  }
+    .updated {
+      color: #666;
+      font-size: 0.9em;
+      margin-bottom: 20px;
+    }
 
-  th, td {
-    padding: 10px;
-    border-bottom: 1px solid #eee;
-    text-align: left;
-  }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      margin-bottom: 20px;
+    }
 
-  th {
-    background: #f0f3fa;
-    font-weight: 600;
-  }
+    th, td {
+      padding: 8px 10px;
+      border-bottom: 1px solid #ddd;
+      text-align: left;
+    }
 
-  tr:nth-child(even) {
-    background: #fafafa;
-  }
+    th {
+      background: #2f5bea;
+      color: white;
+    }
 
-  .center {
-    text-align: center;
-  }
+    tr:nth-child(even) {
+      background: #f2f2f2;
+    }
 
-  .currency {
-    font-weight: 600;
-  }
-
-  .muted {
-    color: #999;
-  }
-
-  .full {
-    margin-top: 16px;
-  }
-</style>
+    .zero {
+      color: #999;
+    }
+  </style>
 </head>
 
 <body>
 
-<h1>🎯 Goals Tracker</h1>
+<h1>Goals Tracker</h1>
 <div class="updated" id="lastUpdated">Loading…</div>
 
-<!-- TOP PERFORMER -->
-<div class="highlight" id="topPerformer" style="display:none;">
-  <div class="label">🏆 Top Performer This Week</div>
-  <div class="name" id="topName"></div>
-  <div class="stats" id="topStats"></div>
-  <div class="totals" id="teamTotals"></div>
-</div>
+<h2>Monthly New Premium</h2>
+<table>
+  <thead>
+    <tr><th>Agent</th><th>Premium</th></tr>
+  </thead>
+  <tbody id="monthlyTable"></tbody>
+</table>
 
-<!-- ROW 1 -->
-<div class="grid">
+<h2>Weekly Agent Breakdown</h2>
+<table>
+  <thead>
+    <tr><th>Agent</th><th>Policies</th><th>Premium</th></tr>
+  </thead>
+  <tbody id="weeklyTable"></tbody>
+</table>
 
-  <div class="card">
-    <h2>📆 Monthly New Premium</h2>
-    <table>
-      <thead>
-        <tr>
-          <th>Agent</th>
-          <th>New Premium</th>
-        </tr>
-      </thead>
-      <tbody id="monthlyTable"></tbody>
-    </table>
-  </div>
+<h2>Weekly Incentives</h2>
+<table>
+  <thead>
+    <tr><th>Policies</th><th>Status</th></tr>
+  </thead>
+  <tbody id="incentivesTable"></tbody>
+</table>
 
-  <div class="card">
-    <h2>📊 Weekly Agent Breakdown</h2>
-    <table>
-      <thead>
-        <tr>
-          <th class="center">Rank</th>
-          <th>Agent</th>
-          <th class="center">Policies</th>
-          <th>Weekly Premium</th>
-        </tr>
-      </thead>
-      <tbody id="weeklyTable"></tbody>
-    </table>
-  </div>
+<h2>Goal Levels</h2>
+<table>
+  <thead>
+    <tr><th>Level</th><th>Threshold</th><th>Label</th><th>Unlocked</th></tr>
+  </thead>
+  <tbody id="levelsTable"></tbody>
+</table>
 
-  <!-- ROW 2 -->
-  <div class="card">
-    <h2>🎁 Weekly Incentives</h2>
-    <table>
-      <thead>
-        <tr>
-          <th>Policies</th>
-          <th>Status</th>
-        </tr>
-      </thead>
-      <tbody id="incentivesTable"></tbody>
-    </table>
-  </div>
-
-  <div class="card">
-    <h2>🚀 Goal Levels</h2>
-    <table>
-      <thead>
-        <tr>
-          <th>Level</th>
-          <th>Threshold</th>
-          <th>Reward</th>
-          <th class="center">Unlocked</th>
-        </tr>
-      </thead>
-      <tbody id="levelsTable"></tbody>
-    </table>
-  </div>
-
-</div>
-
-<!-- DRAWINGS -->
-<div class="card full">
-  <h2>🎟️ Drawings</h2>
-  <table>
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Agent</th>
-        <th>Required</th>
-        <th class="center">Locked</th>
-      </tr>
-    </thead>
-    <tbody id="drawingsTable"></tbody>
-  </table>
-</div>
+<h2>Drawings</h2>
+<table>
+  <thead>
+    <tr><th>Type</th><th>Agent</th><th>Required</th><th>Locked</th></tr>
+  </thead>
+  <tbody id="drawingsTable"></tbody>
+</table>
 
 <script>
-function num(v){ return Number(v) || 0; }
-function currency(v){
-  return num(v) === 0 ? "—" :
-    num(v).toLocaleString("en-US",{style:"currency",currency:"USD"});
-}
-function yesNo(v){
-  return (v === true || v === "True" || v === "Yes") ? "✅" : "🔒";
-}
-
-fetch("./data/goals-tracker.json?ts=" + Date.now())
+fetch('./data/goals-tracker.json?nocache=' + new Date().getTime())
   .then(r => r.json())
   .then(data => {
 
-    document.getElementById("lastUpdated").textContent =
-      "Last updated: " + new Date(data.meta.lastUpdated).toLocaleString();
+    document.getElementById('lastUpdated').textContent =
+      'Last updated: ' + new Date(data.meta.lastUpdated).toLocaleString();
 
-    /* ===== WEEKLY SORT + TOP PERFORMER ===== */
-    const weekly = data.weeklyAgentBreakdown
-      .map(r => ({
-        Agent: r.Agent,
-        Policies: num(r.Policies),
-        Premium: num(r.Premium)
-      }))
-      .sort((a,b) => (b.Policies - a.Policies) || (b.Premium - a.Premium));
-
-    const active = weekly.filter(r => r.Policies > 0 || r.Premium > 0);
-    const top = active[0];
-
-    const totalPolicies = weekly.reduce((s,r)=>s+r.Policies,0);
-    const totalPremium  = weekly.reduce((s,r)=>s+r.Premium,0);
-
-    if (top) {
-      document.getElementById("topName").textContent = top.Agent;
-      document.getElementById("topStats").textContent =
-        `${top.Policies} policies · ${currency(top.Premium)}`;
-      document.getElementById("teamTotals").textContent =
-        `Team totals: ${totalPolicies} policies · ${currency(totalPremium)}`;
-      document.getElementById("topPerformer").style.display = "block";
-    }
-
-    /* ===== MONTHLY ===== */
+    // Monthly
     data.monthlyNewPremium.forEach(r => {
       monthlyTable.innerHTML += `
         <tr>
           <td>${r.Agent}</td>
-          <td class="currency ${num(r.Amount)===0?'muted':''}">
-            ${currency(r.Amount)}
+          <td class="${Number(r.Amount) === 0 ? 'zero' : ''}">
+            ${Number(r.Amount).toLocaleString('en-US',{style:'currency',currency:'USD'})}
           </td>
         </tr>`;
     });
 
-    /* ===== WEEKLY TABLE ===== */
-    weekly.forEach((r,i) => {
-      const empty = r.Policies===0 && r.Premium===0;
+    // Weekly breakdown
+    data.weeklyAgentBreakdown.forEach(r => {
       weeklyTable.innerHTML += `
-        <tr class="${empty?'muted':''}">
-          <td class="center">${empty?"—":(i+1)}</td>
+        <tr>
           <td>${r.Agent}</td>
-          <td class="center">${r.Policies}</td>
-          <td class="currency">${currency(r.Premium)}</td>
+          <td>${r.Policies}</td>
+          <td>${Number(r.Premium).toLocaleString('en-US',{style:'currency',currency:'USD'})}</td>
         </tr>`;
     });
 
-    /* ===== INCENTIVES ===== */
+    // Weekly incentives
     data.weeklyIncentives.forEach(r => {
       incentivesTable.innerHTML += `
         <tr>
@@ -288,34 +138,33 @@ fetch("./data/goals-tracker.json?ts=" + Date.now())
         </tr>`;
     });
 
-    /* ===== LEVELS ===== */
+    // Goal levels
     data.goalLevels.forEach(r => {
       levelsTable.innerHTML += `
         <tr>
           <td>${r.Level}</td>
           <td>${r.Threshold}</td>
           <td>${r.Label}</td>
-          <td class="center">${yesNo(r.Unlocked)}</td>
+          <td>${r.Unlocked}</td>
         </tr>`;
     });
 
-    /* ===== DRAWINGS ===== */
+    // Drawings
     data.drawings.forEach(r => {
       drawingsTable.innerHTML += `
         <tr>
           <td>${r.Type}</td>
           <td>${r.Agent}</td>
           <td>${r.Required}</td>
-          <td class="center">${yesNo(r.Locked)}</td>
+          <td>${r.Locked}</td>
         </tr>`;
     });
 
   })
   .catch(err => {
-    document.body.innerHTML = "<h2>Error loading dashboard</h2><pre>"+err+"</pre>";
+    document.body.innerHTML = '<h2>Error loading dashboard</h2><pre>' + err + '</pre>';
   });
 </script>
 
 </body>
 </html>
-``
