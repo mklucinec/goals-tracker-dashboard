@@ -1,168 +1,321 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Goals Tracker Dashboard</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="UTF-8" />
+<title>Goals Tracker Dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f5f7fa;
-      margin: 0;
-      padding: 20px;
-    }
+<style>
+  body {
+    font-family: "Segoe UI", Arial, sans-serif;
+    background: #f5f7fa;
+    margin: 0;
+    padding: 20px;
+    color: #333;
+  }
 
-    h1 {
-      margin-top: 0;
-    }
+  h1 {
+    margin: 0 0 6px 0;
+  }
 
-    h2 {
-      margin-top: 40px;
-    }
+  .updated {
+    color: #666;
+    font-size: 0.85em;
+    margin-bottom: 20px;
+  }
 
-    .updated {
-      color: #666;
-      font-size: 0.9em;
-      margin-bottom: 20px;
-    }
+  .section {
+    background: #fff;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  }
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      background: white;
-      margin-bottom: 20px;
-    }
+  .section h2 {
+    margin-top: 0;
+    font-size: 1.15em;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 6px;
+  }
 
-    th, td {
-      padding: 8px 10px;
-      border-bottom: 1px solid #ddd;
-      text-align: left;
-    }
+  .highlight {
+    background: linear-gradient(135deg, #2f5bea, #4c7cff);
+    color: #fff;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 20px;
+  }
 
-    th {
-      background: #2f5bea;
-      color: white;
-    }
+  .highlight .name {
+    font-size: 1.4em;
+    font-weight: bold;
+  }
 
-    tr:nth-child(even) {
-      background: #f2f2f2;
-    }
+  .highlight .stats {
+    margin-top: 6px;
+    font-size: 1em;
+    opacity: 0.9;
+  }
 
-    .zero {
-      color: #999;
-    }
-  </style>
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+  }
+
+  th, td {
+    padding: 8px 10px;
+    border-bottom: 1px solid #eee;
+    font-size: 0.95em;
+    text-align: left;
+  }
+
+  th {
+    background: #f0f3fa;
+    font-weight: 600;
+  }
+
+  tr:nth-child(even) {
+    background: #fafafa;
+  }
+
+  .currency {
+    font-weight: 600;
+  }
+
+  .muted {
+    color: #999;
+  }
+
+  .center {
+    text-align: center;
+  }
+</style>
 </head>
 
 <body>
 
-<h1>Goals Tracker</h1>
+<h1>🎯 Goals Tracker</h1>
 <div class="updated" id="lastUpdated">Loading…</div>
 
-<h2>Monthly New Premium</h2>
-<table>
-  <thead>
-    <tr><th>Agent</th><th>Premium</th></tr>
-  </thead>
-  <tbody id="monthlyTable"></tbody>
-</table>
+<div class="highlight" id="topPerformer" style="display:none;">
+  <div id="topLabel"></div>
+  <div class="name" id="topName"></div>
+  <div class="stats" id="topStats"></div>
+</div>
 
-<h2>Weekly Agent Breakdown</h2>
-<table>
-  <thead>
-    <tr><th>Agent</th><th>Policies</th><th>Premium</th></tr>
-  </thead>
-  <tbody id="weeklyTable"></tbody>
-</table>
+<div class="section">
+  <h2 id="monthlyTitle"></h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Agent</th>
+        <th id="monthlyAmountHeader"></th>
+      </tr>
+    </thead>
+    <tbody id="monthlyTable"></tbody>
+  </table>
+</div>
 
-<h2>Weekly Incentives</h2>
-<table>
-  <thead>
-    <tr><th>Policies</th><th>Status</th></tr>
-  </thead>
-  <tbody id="incentivesTable"></tbody>
-</table>
+<div class="section">
+  <h2 id="weeklyTitle"></h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Agent</th>
+        <th class="center" id="policiesHeader"></th>
+        <th id="weeklyPremiumHeader"></th>
+      </tr>
+    </thead>
+    <tbody id="weeklyTable"></tbody>
+  </table>
+</div>
 
-<h2>Goal Levels</h2>
-<table>
-  <thead>
-    <tr><th>Level</th><th>Threshold</th><th>Label</th><th>Unlocked</th></tr>
-  </thead>
-  <tbody id="levelsTable"></tbody>
-</table>
+<div class="section">
+  <h2 id="incentivesTitle"></h2>
+  <table>
+    <thead>
+      <tr>
+        <th id="policiesHeader2"></th>
+        <th id="statusHeader"></th>
+      </tr>
+    </thead>
+    <tbody id="incentivesTable"></tbody>
+  </table>
+</div>
 
-<h2>Drawings</h2>
-<table>
-  <thead>
-    <tr><th>Type</th><th>Agent</th><th>Required</th><th>Locked</th></tr>
-  </thead>
-  <tbody id="drawingsTable"></tbody>
-</table>
+<div class="section">
+  <h2 id="levelsTitle"></h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Level</th>
+        <th id="thresholdHeader"></th>
+        <th id="rewardHeader"></th>
+        <th class="center">Status</th>
+      </tr>
+    </thead>
+    <tbody id="levelsTable"></tbody>
+  </table>
+</div>
+
+<div class="section">
+  <h2 id="drawingsTitle"></h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Agent</th>
+        <th id="requiredHeader"></th>
+        <th class="center">Status</th>
+      </tr>
+    </thead>
+    <tbody id="drawingsTable"></tbody>
+  </table>
+</div>
 
 <script>
-fetch('./data/goals-tracker.json?nocache=' + new Date().getTime())
+/* =====================
+   DISPLAY LABELS
+===================== */
+const LABELS = {
+  sections: {
+    monthly: "📆 Monthly New Premium",
+    weekly: "📊 Weekly Agent Breakdown",
+    incentives: "🎁 Weekly Incentives",
+    levels: "🚀 Goal Levels",
+    drawings: "🎟️ Drawings"
+  },
+  columns: {
+    premium: "New Premium",
+    policies: "Policies Written",
+    status: "Incentive Status",
+    threshold: "Required Premium",
+    reward: "Reward",
+    required: "Required"
+  },
+  phrases: {
+    topPerformer: "🏆 Top Performer This Week",
+    lastUpdated: "Last updated",
+    policiesSuffix: "policies written"
+  }
+};
+
+/* =====================
+   FORMATTERS
+===================== */
+function formatCurrency(val) {
+  if (Number(val) === 0) return "—";
+  return Number(val).toLocaleString("en-US", {
+    style: "currency",
+    currency: "USD"
+  });
+}
+
+function yesNoIcon(val) {
+  return (val === true || val === "Yes" || val === "TRUE")
+    ? "✅"
+    : "🔒";
+}
+
+function formatStatus(msg) {
+  if (!msg) return "";
+  const m = msg.toLowerCase();
+  if (m.includes("unlocked")) return "✅ Unlocked";
+  if (m.includes("need") || m.includes("remaining")) return "⏳ In progress";
+  return msg;
+}
+
+/* =====================
+   SET STATIC LABELS
+===================== */
+document.getElementById("monthlyTitle").textContent = LABELS.sections.monthly;
+document.getElementById("weeklyTitle").textContent = LABELS.sections.weekly;
+document.getElementById("incentivesTitle").textContent = LABELS.sections.incentives;
+document.getElementById("levelsTitle").textContent = LABELS.sections.levels;
+document.getElementById("drawingsTitle").textContent = LABELS.sections.drawings;
+
+document.getElementById("monthlyAmountHeader").textContent = LABELS.columns.premium;
+document.getElementById("weeklyPremiumHeader").textContent = LABELS.columns.premium;
+document.getElementById("policiesHeader").textContent = LABELS.columns.policies;
+document.getElementById("policiesHeader2").textContent = LABELS.columns.policies;
+document.getElementById("statusHeader").textContent = LABELS.columns.status;
+document.getElementById("thresholdHeader").textContent = LABELS.columns.threshold;
+document.getElementById("rewardHeader").textContent = LABELS.columns.reward;
+document.getElementById("requiredHeader").textContent = LABELS.columns.required;
+
+/* =====================
+   LOAD DATA
+===================== */
+fetch("./data/goals-tracker.json?nocache=" + Date.now())
   .then(r => r.json())
   .then(data => {
 
-    document.getElementById('lastUpdated').textContent =
-      'Last updated: ' + new Date(data.meta.lastUpdated).toLocaleString();
+    document.getElementById("lastUpdated").textContent =
+      `${LABELS.phrases.lastUpdated}: ` +
+      new Date(data.meta.lastUpdated).toLocaleString();
 
-    // Monthly
+    if (data.weeklyAgentBreakdown.length > 0) {
+      const top = data.weeklyAgentBreakdown[0];
+      document.getElementById("topLabel").textContent = LABELS.phrases.topPerformer;
+      document.getElementById("topName").textContent = top.Agent;
+      document.getElementById("topStats").textContent =
+        `${top.Policies} ${LABELS.phrases.policiesSuffix} · ${formatCurrency(top.Premium)}`;
+      document.getElementById("topPerformer").style.display = "block";
+    }
+
     data.monthlyNewPremium.forEach(r => {
       monthlyTable.innerHTML += `
         <tr>
           <td>${r.Agent}</td>
-          <td class="${Number(r.Amount) === 0 ? 'zero' : ''}">
-            ${Number(r.Amount).toLocaleString('en-US',{style:'currency',currency:'USD'})}
+          <td class="currency ${Number(r.Amount) === 0 ? 'muted' : ''}">
+            ${formatCurrency(r.Amount)}
           </td>
         </tr>`;
     });
 
-    // Weekly breakdown
     data.weeklyAgentBreakdown.forEach(r => {
       weeklyTable.innerHTML += `
         <tr>
           <td>${r.Agent}</td>
-          <td>${r.Policies}</td>
-          <td>${Number(r.Premium).toLocaleString('en-US',{style:'currency',currency:'USD'})}</td>
+          <td class="center">${r.Policies}</td>
+          <td class="currency">${formatCurrency(r.Premium)}</td>
         </tr>`;
     });
 
-    // Weekly incentives
     data.weeklyIncentives.forEach(r => {
       incentivesTable.innerHTML += `
         <tr>
           <td>${r.Policies}</td>
-          <td>${r.StatusMessage}</td>
+          <td>${formatStatus(r.StatusMessage)}</td>
         </tr>`;
     });
 
-    // Goal levels
     data.goalLevels.forEach(r => {
       levelsTable.innerHTML += `
         <tr>
           <td>${r.Level}</td>
           <td>${r.Threshold}</td>
           <td>${r.Label}</td>
-          <td>${r.Unlocked}</td>
+          <td class="center">${yesNoIcon(r.Unlocked)}</td>
         </tr>`;
     });
 
-    // Drawings
     data.drawings.forEach(r => {
       drawingsTable.innerHTML += `
         <tr>
           <td>${r.Type}</td>
           <td>${r.Agent}</td>
           <td>${r.Required}</td>
-          <td>${r.Locked}</td>
+          <td class="center">${yesNoIcon(r.Locked)}</td>
         </tr>`;
     });
 
   })
   .catch(err => {
-    document.body.innerHTML = '<h2>Error loading dashboard</h2><pre>' + err + '</pre>';
+    document.body.innerHTML =
+      "<h2>Error loading dashboard</h2><pre>" + err + "</pre>";
   });
 </script>
 
